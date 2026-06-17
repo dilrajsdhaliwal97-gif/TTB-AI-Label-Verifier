@@ -5,7 +5,6 @@ import numpy as np
 import re
 import pandas as pd
 from PIL import Image
-import pytesseract
 from difflib import SequenceMatcher
 
 st.set_page_config(page_title="TTB AI Label Verifier", layout="wide")
