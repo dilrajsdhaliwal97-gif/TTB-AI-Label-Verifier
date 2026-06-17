@@ -229,11 +229,9 @@ def run_ocr_all(image: Image.Image) -> list[str]:
         texts.extend(reader.readtext(img, detail=0, min_size=10))
 
     # Add Tesseract OCR
-    try:
-        tess_text = pytesseract.image_to_string(base, config="--psm 6")
-        texts.extend(tess_text.splitlines())
-    except:
-        pass
+   # Tesseract disabled on Streamlit Cloud
+# (EasyOCR handles extraction in cloud mode)
+
 
     # Clean empty lines
     return [t.strip() for t in texts if t.strip()]
