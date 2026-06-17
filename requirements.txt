@@ -1,6 +1,14 @@
-streamlit
-easyocr
-opencv-python-headless
-numpy
-pandas
-Pillow
+Tools Used
+Python
+
+Streamlit
+
+EasyOCR
+
+Tesseract
+
+OpenCV
+
+NumPy
+
+Pandas
