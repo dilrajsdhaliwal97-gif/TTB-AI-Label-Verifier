@@ -1,14 +1,8 @@
-Tools Used
-Python
-
-Streamlit
-
-EasyOCR
-
-Tesseract
-
-OpenCV
-
-NumPy
-
-Pandas
+streamlit
+opencv-python
+numpy
+pandas
+pillow
+torch
+torchvision
+easyocr
