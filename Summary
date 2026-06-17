@@ -1,0 +1,19 @@
+The TTB AI Label Verifier is a computer‑vision prototype designed to assist the U.S. Department of the Treasury (TTB) in automating alcohol beverage label compliance checks. The system extracts text from uploaded label images, interprets it using a custom classification engine, and validates it against regulatory requirements.
+
+The prototype uses a dual‑OCR pipeline (EasyOCR + Tesseract) combined with advanced image preprocessing (CLAHE, sharpening, denoising, rotation scanning) to handle curved bottles, noisy backgrounds, and distorted text. Extracted text is normalized and analyzed through a rule‑based and fuzzy‑matching engine that verifies:
+
+Brand name
+
+TTB class/type
+
+Alcohol by volume (ABV)
+
+Net contents (mL / FL OZ)
+
+Government warning statement
+
+The system includes specialized logic for hard cider, correcting common OCR distortions (e.g., “35” → “355 mL”) and robust fallback detection for the government warning using similarity scoring and key‑phrase matching.
+
+The user interface is built in Streamlit, enabling fast, intuitive testing without technical expertise. The application returns a clear PASS / AUDIT REQUIRED verdict along with a detailed breakdown of each compliance metric and a full OCR audit trail.
+
+This prototype demonstrates how AI can accelerate TTB label review workflows by reducing manual text extraction, improving consistency, and flagging discrepancies early — while still keeping human analysts in control of final decisions.
