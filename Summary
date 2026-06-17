@@ -17,3 +17,154 @@ The system includes specialized logic for hard cider, correcting common OCR dist
 The user interface is built in Streamlit, enabling fast, intuitive testing without technical expertise. The application returns a clear PASS / AUDIT REQUIRED verdict along with a detailed breakdown of each compliance metric and a full OCR audit trail.
 
 This prototype demonstrates how AI can accelerate TTB label review workflows by reducing manual text extraction, improving consistency, and flagging discrepancies early — while still keeping human analysts in control of final decisions.
+
+# Brief Documentation of Approach, Tools Used, and Assumptions Made
+
+## 1. Overview
+The TTB AI Label Verifier is a prototype demonstrating how computer vision and OCR can support the U.S. Department of the Treasury (TTB) in automating alcohol beverage label compliance checks. The system extracts text from uploaded label images, interprets it using a custom classification and validation engine, and compares the extracted information against application‑submitted values (brand, class/type, ABV, net contents, and government warning).
+
+The goal is to accelerate human review, reduce manual transcription, and flag discrepancies early.
+
+---
+
+## 2. Approach
+
+### 2.1 OCR Pipeline
+The system uses a **dual‑OCR architecture** in local/production environments:
+
+- **EasyOCR** — robust for curved bottles, stylized fonts, and noisy backgrounds  
+- **Tesseract OCR** — strong for structured text and government warning blocks  
+
+Images undergo preprocessing to maximize OCR accuracy:
+
+- CLAHE contrast enhancement  
+- Sharpening filter  
+- Gaussian denoising  
+- Otsu thresholding  
+- 4‑way rotation scanning (0°, 90°, 180°, 270°)
+
+**Cloud Deployment Note:**  
+Streamlit Cloud does not support Tesseract.  
+The deployed version uses **EasyOCR only**, while local/production deployments can use **EasyOCR + Tesseract** for higher accuracy.
+
+---
+
+### 2.2 Text Normalization & Fuzzy Matching
+Extracted text is normalized by:
+
+- Uppercasing  
+- Removing punctuation  
+- Removing non‑alphanumeric characters  
+
+Fuzzy matching (SequenceMatcher) is used to handle OCR noise, especially for:
+
+- Brand names  
+- Wine varietals  
+- Cider terms  
+- Government warning fragments  
+
+This allows the system to tolerate imperfect OCR while still identifying key regulatory elements.
+
+---
+
+### 2.3 TTB Class/Type Classification
+The system includes a custom rule‑based classifier that maps:
+
+- Market terms → TTB canonical classes  
+- Wine varietals → GRAPE WINE  
+- Beer styles → MALT BEVERAGE  
+- Cider terms → CIDER  
+- Spirits categories → their TTB equivalents  
+
+Both exact matches and fuzzy similarity are used to detect class/type even when OCR introduces distortions.
+
+---
+
+### 2.4 ABV Extraction
+ABV is extracted using multiple regex patterns that capture:
+
+- “% ALC”  
+- “ALC BY VOL”  
+- “% VOL”  
+- Noisy OCR variants  
+
+A tolerance of **±0.5%** is applied to account for OCR variability.
+
+---
+
+### 2.5 Net Contents Extraction
+The system detects:
+
+- mL  
+- FL OZ  
+- Liters  
+- Noisy OCR patterns (e.g., “E5ML” → “35ML”)  
+
+A cider‑specific correction is included:
+
+- If OCR reads **35 mL** but the expected value is **355 mL**, the system corrects it  
+- This is based on the assumption that no beverage container is 35 mL  
+
+This dramatically improves accuracy for cider labels, which often produce noisy OCR.
+
+---
+
+### 2.6 Government Warning Detection
+Government warning detection uses a **three‑layer approach**:
+
+1. **Header detection** (“GOVERNMENT WARNING”)  
+2. **Body similarity scoring** against the canonical warning  
+3. **Fallback phrase detection**, including:  
+   - “ACCORDING” + “SURGEON” + “PREG”  
+   - “DEFECTS” + “ALCOHOL”  
+   - “OPERATE” + “MACHINERY”  
+
+This ensures detection even when OCR is severely degraded.
+
+---
+
+3. Tools Used
+
+ Core Libraries
+- **EasyOCR** — primary OCR engine (cloud + local)  
+- **Tesseract OCR** — secondary OCR engine (local only)  
+- **OpenCV** — preprocessing, rotation, thresholding  
+- **NumPy / Pandas** — data handling  
+- **Pillow** — image loading  
+- **Streamlit** — user interface and deployment  
+
+ Development Tools
+- Python 3.10  
+- GitHub for version control  
+- Streamlit Cloud for deployment  
+
+---
+
+4. Assumptions Made
+
+1. OCR noise is expected due to curved bottles, glare, and stylized fonts.  
+2. Missing OCR text does not imply non‑compliance — the system marks it as “Not detected,” not “Fail.”  
+3. ABV and volume must match application values within tolerance.  
+4. Government warning may appear in multiple formats, so fuzzy detection is required.  
+5. Cider labels often produce distorted volume OCR, so correction logic is applied.  
+6. Local production deployments may use dual‑OCR, but cloud deployments use EasyOCR only.  
+7. This is a prototype, not a production compliance engine.  
+
+---
+
+5. Limitations
+- OCR accuracy depends on image quality  
+- Extremely distorted or low‑resolution labels may require human review  
+- Rule‑based classification may not cover all edge cases  
+- Tesseract cannot run in cloud environments without system‑level installation  
+
+---
+
+6. Future Enhancements
+- Transformer‑based OCR (e.g., Donut, TrOCR)  
+- Label segmentation to isolate text regions  
+- GPU acceleration  
+- Automated COLA form parsing  
+- Confidence scoring for each metric  
+
+
