@@ -23,7 +23,7 @@ This prototype demonstrates how AI can accelerate TTB label review workflows by 
 ## 1. Overview
 The TTB AI Label Verifier is a prototype demonstrating how computer vision and OCR can support the U.S. Department of the Treasury (TTB) in automating alcohol beverage label compliance checks. The system extracts text from uploaded label images, interprets it using a custom classification and validation engine, and compares the extracted information against application‑submitted values (brand, class/type, ABV, net contents, and government warning).
 
-The goal is to accelerate human review, reduce manual transcription, and flag discrepancies early.
+The goal is to accelerate human review, reduce manual transcription, and flag discrepancies early. With the knowledge of approximatly half the team is 50 years old and over a simple UI was implimented so each aspect is as easy to use as texting a message or sending an image over to someone. Aside from this project being on the cloud for demonstration and employer testing, this system is made for offline use making sure it does not impact approvals or audits by connecting outbound or interfering with firewall rules.
 
 ---
 
